@@ -126,7 +126,7 @@ info_types=['AGE','PASSWORD','FIRST_NAME']
 input_csv_file='/Users/cindyzhong/myscripts/dlp-demo/dlp_demo.csv'
 output_csv_file='/Users/cindyzhong/myscripts/dlp-demo/dlp_output.csv'
 field_to_be_redacted=['Text']
-service_account_path="/Users/cindyzhong/mykeys/cindy-analytics-demos-0ad2b63f362f.json"
+service_account_path="/Users/cindyzhong/mykeys/PATH_TO_KEY.json"
 ###########################################################################################
 
 
