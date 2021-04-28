@@ -135,7 +135,7 @@ def deidentify_csv(
 ####################### MODIFY YOUR VARIABLES ##############################################
 
 project='cindy-analytics-demos'
-info_types=['AGE','PASSWORD','PERSON_NAME']
+info_types=['AGE','PASSWORD','PERSON_NAME','STREET_ADDRESS']
 input_csv_file='/Users/cindyzhong/myscripts/dlp-demo/dlp_demo.csv'
 output_csv_file='/Users/cindyzhong/myscripts/dlp-demo/dlp_output.csv'
 field_to_be_redacted=['Text']
