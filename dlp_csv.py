@@ -4,7 +4,8 @@ def deidentify_csv(
     output_csv_file=None,
     field_to_be_redacted=None,
     info_types=None,
-    service_account_path=None
+    regex_pattern=None,
+    service_account_path=None,
 ):
     """Uses the Data Loss Prevention API to deidentify dates in a CSV file by
         pseudorandomly shifting them.
@@ -18,6 +19,7 @@ def deidentify_csv(
             Example: ['Text']
         info_types: List of Infotypes to Redact
             Example: ['AGE','PASSWORD','FIRST_NAME']
+        regex_pattern: String representing the Regex Pattern
     Returns:
         None; the response from the API is printed to the terminal.
     """
@@ -48,6 +50,7 @@ def deidentify_csv(
         for row in reader:
             f.append(row)
 
+
     #Helper function for converting CSV rows to Protobuf types
     def map_headers(header):
         return {"name": header}
@@ -68,7 +71,6 @@ def deidentify_csv(
     # Construct the table dict
     table_item = {"table": {"headers": csv_headers, "rows": csv_rows}}
 
-
     # Write to CSV helper methods
 
     def write_header(header):
@@ -77,9 +79,19 @@ def deidentify_csv(
     def write_data(data):
         return data.string_value
 
- 
+
+    custom_info_types = [
+        {
+            "info_type": {"name": "CUSTOM_NAME"},
+            "regex": {"pattern": regex_pattern, "group_indexes":[1,2,3]},
+            "likelihood": "VERY_LIKELY",
+        }
+    ]
+
+
     # Construct inspect configuration dictionary
-    inspect_config = {"info_types": [{"name": info_type} for info_type in info_types]}
+    inspect_config = {"custom_info_types": custom_info_types,
+                      "info_types": [{"name": info_type} for info_type in info_types]}
 
     #Construct deidentify configuration dictionary
     deidentify_config = {
@@ -116,18 +128,20 @@ def deidentify_csv(
         write_file.writerow(map(write_header, response.item.table.headers))
         for row in response.item.table.rows:
             write_file.writerow(map(write_data, row.values))
-    # Print status
     print("Successfully saved redacted output to {}".format(output_csv_file))
+
+
 
 ####################### MODIFY YOUR VARIABLES ##############################################
 
 project='cindy-analytics-demos'
-info_types=['AGE','PASSWORD','FIRST_NAME']
+info_types=['AGE','PASSWORD','PERSON_NAME']
 input_csv_file='/Users/cindyzhong/myscripts/dlp-demo/dlp_demo.csv'
 output_csv_file='/Users/cindyzhong/myscripts/dlp-demo/dlp_output.csv'
 field_to_be_redacted=['Text']
-service_account_path="/Users/cindyzhong/mykeys/PATH_TO_KEY.json"
+regex_pattern="(?i)name is (\w+)|nom est (\w+)|m’appelle (\w+)"
+service_account_path="/Users/cindyzhong/mykeys/cindy-analytics-demos-0ad2b63f362f.json"
 ###########################################################################################
 
 
-deidentify_csv(project,input_csv_file,output_csv_file,field_to_be_redacted,info_types,service_account_path)
+deidentify_csv(project,input_csv_file,output_csv_file,field_to_be_redacted,info_types,regex_pattern,service_account_path)
