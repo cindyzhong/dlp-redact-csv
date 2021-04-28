@@ -28,6 +28,7 @@ def deidentify_csv(
     import math
     import sys
     import time
+    import csv
 
     # Instantiate a client
     dlp = google.cloud.dlp_v2.DlpServiceClient.from_service_account_json(service_account_path)
@@ -45,7 +46,6 @@ def deidentify_csv(
         field_to_be_redacted = []
 
     # Read and parse the CSV file
-    import csv
 
     f = []
     with open(input_csv_file, "r", encoding="utf8", errors='ignore') as csvfile:
@@ -53,8 +53,8 @@ def deidentify_csv(
         for row in reader:
             f.append(row)
 
-    num_record = len(f)
-    batch_size = 1000
+    num_record = len(f) 
+    batch_size = 1000 # batching the request to avoid hitting API limit
     num_batch = math.floor(num_record/batch_size)
 
     #Helper function for converting CSV rows to Protobuf types
